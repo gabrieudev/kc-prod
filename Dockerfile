@@ -21,4 +21,4 @@ COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
 USER keycloak
 EXPOSE ${KC_HTTP_PORT}
 
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--optimized", "--cache=local", "--proxy=${KC_PROXY}", "--hostname-strict=${KC_HOSTNAME_STRICT}", "--proxy-headers=${KC_PROXY_HEADERS}", "--hostname=${KC_HOSTNAME}", "--http-port=${KC_HTTP_PORT}", "--db=${KC_DB}", "--db-username=${KC_DB_USERNAME}", "--db-password=${KC_DB_PASSWORD}", "--db-url=${KC_DB_URL}", "--bootstrap-admin-password=${KC_BOOTSTRAP_ADMIN_PASSWORD}", "--bootstrap-admin-username=${KC_BOOTSTRAP_ADMIN_USERNAME}", "--http-enabled=${KC_HTTP_ENABLED}"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--optimized", "--cache=local", "--proxy=edge", "--hostname-strict=false", "--proxy-headers=forwarded", "--hostname=${KC_HOSTNAME}", "--http-port=${KC_HTTP_PORT}", "--db=postgres", "--db-username=${KC_DB_USERNAME}", "--db-password=${KC_DB_PASSWORD}", "--db-url=${KC_DB_URL}", "--bootstrap-admin-password=${KC_BOOTSTRAP_ADMIN_PASSWORD}", "--bootstrap-admin-username=${KC_BOOTSTRAP_ADMIN_USERNAME}", "--http-enabled=true"]
