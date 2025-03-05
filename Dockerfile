@@ -1,5 +1,8 @@
 FROM quay.io/keycloak/keycloak:latest as builder
 
+ENV KC_PROXY=edge
+ENV KC_HTTP_ENABLED=true
+ENV KC_HOSTNAME_STRICT=false
 ENV KC_DB=postgres
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
