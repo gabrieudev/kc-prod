@@ -1,26 +1,20 @@
-FROM quay.io/keycloak/keycloak:26.1.3 as builder
+FROM quay.io/keycloak/keycloak:latest AS builder
 
-RUN /opt/keycloak/bin/kc.sh build \
-    --db=postgres \
-    --features=token-exchange,admin-fine-grained-authz,scripts
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
 
-FROM quay.io/keycloak/keycloak:26.1.3
-COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
-
-ENV KC_PROXY=edge
-ENV KC_HOSTNAME_STRICT=false
-ENV KC_HTTP_ENABLED=true
 ENV KC_DB=postgres
-ENV KC_DB_URL=${KC_DB_URL}
-ENV KC_DB_USERNAME=${KC_DB_USERNAME}
-ENV KC_DB_PASSWORD=${KC_DB_PASSWORD}
-ENV KC_ADMIN_USER=${KC_ADMIN_USER}
-ENV KC_ADMIN_PASSWORD=${KC_ADMIN_PASSWORD}
-ENV KC_HOSTNAME=${KC_HOSTNAME}
-ENV KC_BOOTSTRAP_ADMIN_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME}
-ENV KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
-ENV KC_LOG_LEVEL=WARN
-ENV JAVA_OPTS="-XX:MaxRAMPercentage=70 -XX:+UseContainerSupport"
 
-USER keycloak
-CMD ["start", "--optimized"]
+WORKDIR /opt/keycloak
+RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
+RUN /opt/keycloak/bin/kc.sh build
+
+FROM quay.io/keycloak/keycloak:latest
+COPY --from=builder /opt/keycloak/ /opt/keycloak/
+
+ENV KC_DB=postgres
+ENV KC_DB_URL=<DBURL>
+ENV KC_DB_USERNAME=<DBUSERNAME>
+ENV KC_DB_PASSWORD=<DBPASSWORD>
+ENV KC_HOSTNAME=localhost
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
