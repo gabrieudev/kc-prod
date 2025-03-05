@@ -8,7 +8,7 @@ ENV KC_HOSTNAME_STRICT=false
 RUN /opt/keycloak/bin/kc.sh build \
     --http-enabled=true \
     --proxy=edge \
-    --cache=local  # Adicionando cache para produção
+    --cache=local
 
 FROM quay.io/keycloak/keycloak:latest
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
